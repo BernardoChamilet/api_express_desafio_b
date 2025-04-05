@@ -8,3 +8,5 @@ user_routes.post('/users', controllers.createUser);
 user_routes.get('/users', controllers.getUsers);
 
 user_routes.get('/users/:id', controllers.getUser);
+
+user_routes.put('/users/:id', controllers.updateUser);
