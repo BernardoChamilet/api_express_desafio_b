@@ -105,7 +105,7 @@ export async function updatePassword(req, res){
         const user = await User.findByPk(user_id);
         if (!user){
             // 404: usuário não encontrado
-            return res.status(404).json({ erro: 'Usuário com esse id não encontrado' });
+            return res.status(404).json({ erro: 'usuário com esse id não encontrado' });
         }
         // verificando se senha está correta
         const senhaCorreta = await bcrypt.compare(old_password, user.user_password);
@@ -117,12 +117,30 @@ export async function updatePassword(req, res){
         const hashedPassword = await bcrypt.hash(new_password, 10);
         await user.update({user_password: hashedPassword});
         // 200: senha atualizada
-        res.status(200).json({mensagem: `Senha do usuário de id ${user_id} atualizada com sucesso`});
+        res.status(200).json({mensagem: `senha do usuário de id ${user_id} atualizada com sucesso`});
     } catch(error){
         if (error.name === 'SequelizeValidationError'){
             // 400: requisição mal feita
             return res.status(400).json({ erro: 'número de caracteres inválido' });
         }
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
+
+// deleteUser deleta um usuário
+export async function deleteUser(req, res){
+    const user_id = parseInt(req.params.id, 10);
+    try{
+        const user = await User.findByPk(user_id);
+        if (!user){
+            // 404: usuário não encontrado
+            return res.status(404).json({ erro: 'Usuário com esse id não encontrado' });
+        }
+        await user.destroy()
+        // 204: usuário deletado
+        res.status(204).send();
+    }catch(error){
         // 500: erro interno no servidor
         res.status(500).json({ erro: error.message });
     }
