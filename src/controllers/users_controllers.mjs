@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 export async function createUser(req, res){
     const { first_name, last_name, email, username, user_password } = req.body;
     try{
+        // criptografando senha
         const hashedPassword = await bcrypt.hash(user_password, 10);
         const newUser = await User.create({ first_name, last_name, email, username, user_password: hashedPassword });
         // 201: usuário criado
@@ -90,6 +91,37 @@ export async function updateUser(req, res){
             const message = error.errors.map(e => e.message);
             // 400: requisição mal feita
             return res.status(400).json({ erro: message });
+        }
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
+
+// updatePassword atualiza a senha de um usuário
+export async function updatePassword(req, res){
+    const user_id = parseInt(req.params.id, 10);
+    const {old_password, new_password} = req.body;
+    try{
+        const user = await User.findByPk(user_id);
+        if (!user){
+            // 404: usuário não encontrado
+            return res.status(404).json({ erro: 'Usuário com esse id não encontrado' });
+        }
+        // verificando se senha está correta
+        const senhaCorreta = await bcrypt.compare(old_password, user.user_password);
+        if (!senhaCorreta){
+            // 401: não autorizado (senha incorreta)
+            return res.status(401).json({erro: "senha incorreta"});
+        }
+        // criptografando nova senha
+        const hashedPassword = await bcrypt.hash(new_password, 10);
+        await user.update({user_password: hashedPassword});
+        // 200: senha atualizada
+        res.status(200).json({mensagem: `Senha do usuário de id ${user_id} atualizada com sucesso`});
+    } catch(error){
+        if (error.name === 'SequelizeValidationError'){
+            // 400: requisição mal feita
+            return res.status(400).json({ erro: 'número de caracteres inválido' });
         }
         // 500: erro interno no servidor
         res.status(500).json({ erro: error.message });
