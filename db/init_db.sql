@@ -11,7 +11,9 @@ CREATE TABLE IF NOT EXISTS items (
     item_id SERIAL PRIMARY KEY,
     item_description VARCHAR(255) NOT NULL,
     image_url VARCHAR(255),
-    name VARCHAR(50) NOT NULL
+    item_name VARCHAR(50) NOT NULL,
+    creator INT NOT NULL,
+    FOREIGN KEY (creator) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tags (
@@ -19,11 +21,10 @@ CREATE TABLE IF NOT EXISTS tags (
     tag_name VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS item_user (
-    user_id INT NOT NULL,
+CREATE TABLE IF NOT EXISTS item_receiver (
+    receiver_id INT NOT NULL,
     item_id INT NOT NULL,
-    relation_type ENUM('CREATOR', 'RECEIVER') NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
 );
 
