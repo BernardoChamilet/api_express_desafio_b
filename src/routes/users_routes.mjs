@@ -6,3 +6,5 @@ export const user_routes = express.Router();
 user_routes.post('/users', controllers.createUser);
 
 user_routes.get('/users', controllers.getUsers);
+
+user_routes.get('/users/:id', controllers.getUser);

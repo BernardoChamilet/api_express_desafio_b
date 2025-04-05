@@ -40,3 +40,19 @@ export async function getUsers(req, res){
         res.status(500).json({ erro: error.message });
     }
 };
+
+// Buscar um usuário pelo id
+export async function getUser(req, res){
+    const user_id = parseInt(req.params.id, 10);
+    try{
+        const user = await User.findByPk(user_id);
+        if (!user){
+            // 404: não encontrado
+            return res.status(404).json({ erro: 'Usuário com esse id não encontrado' });
+        }
+        res.status(200).json(user);
+    }catch(error){
+        // 500: erro interno no servidor
+        res.status(500).json({erro: error.message})
+    }
+}
