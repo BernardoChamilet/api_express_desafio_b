@@ -20,11 +20,23 @@ export async function createUser(req, res){
             return res.status(400).json({ erro: message });
         }
         // 500: erro interno no servidor
-        res.status(500).json({ erro: message });
+        res.status(500).json({ erro: error.message });
     }
 };
 
 // Busca todos usuários
-export function getUsers(req, res){
-    res.status(200).json({ usuarios: [] });
+export async function getUsers(req, res){
+    try{
+        const limit = parseInt(req.query.limit, 10) || 10;
+        const offset = parseInt(req.query.offset, 10) || 0;
+        const users = await User.findAll({limit, offset, order: [['user_id', 'ASC']]});
+        if (users.length === 0) {
+            // 204: nenhum usuário
+            return res.status(204).send();
+          }
+        res.status(200).json(users);
+    }catch(error){
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
 };
