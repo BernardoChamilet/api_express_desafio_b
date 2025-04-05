@@ -1,13 +1,19 @@
 import express from 'express';
-import dotenv from 'dotenv';
-
-// Carregando variáveis do .env
-dotenv.config();
+import { user_routes } from './src/routes/users_routes.mjs';
+import { PORT } from './src/config/config.mjs';
+import { sequelize } from './src/database/database.mjs';
 
 const app = express();
 
-const PORT = parseInt(process.env.PORT, 10) || 3000;
+app.use(express.json());
 
-app.listen(PORT, () => {
-    console.log(`Escutando na porta ${PORT}...`);
-});
+app.use(user_routes);
+
+try{
+    await sequelize.authenticate();
+    app.listen(PORT, () => {
+        console.log(`Escutando na porta ${PORT}...`);
+    });
+} catch (error) {
+    console.error('Erro ao conectar com banco de dados:', error);
+}
