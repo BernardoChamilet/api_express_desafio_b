@@ -80,3 +80,40 @@ export async function getCreatorItems(req, res){
         res.status(500).json({ erro: error.message });
     }
 }
+
+// updateItem atualiza dados de um item (somente o criador consegue)
+export async function updateItem(req, res) {
+    const item_id = parseInt(req.params.id, 10);
+    const creator = req.user_id;
+    // identificando campos a serem atualizados
+    const camposPossiveis = ['item_description', 'image_url', 'item_name'];
+    const camposAtualizados = {}
+    for (const campo of camposPossiveis) {
+        if (req.body[campo] !== undefined) {
+            camposAtualizados[campo] = req.body[campo]
+        }
+    }
+    try {
+        const item = await Item.findByPk(item_id, { attributes: ['item_id','creator'] });
+        if (!item) {
+            // 404: item não encontrado
+            return res.status(404).json({ erro: 'Item com esse id não encontrado' });
+        }
+        // verificando se o logado é o criador do item
+        if (item.creator !== creator){
+            // 403: proibido atualizar item que não seja o criador
+            return res.status(403).json({ erro: 'Não é permitido atualizar dados de um item que não seja o criador' });
+        }
+        await item.update(camposAtualizados);
+        // 200: dados atualizados
+        res.status(200).json({ mensagem: `Dados do item de id ${item_id} atualizados com sucesso` });
+    } catch (error) {
+        if (error.name === 'SequelizeValidationError') {
+            const message = error.errors.map(e => e.message);
+            // 400: requisição mal feita
+            return res.status(400).json({ erro: message });
+        }
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
