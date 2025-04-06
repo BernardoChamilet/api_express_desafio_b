@@ -26,3 +26,20 @@ export async function createItem(req, res){
         res.status(500).json({ erro: error.message });
     }
 }
+
+// getItem busca um item pelo id
+export async function getItem(req, res){
+    const item_id = parseInt(req.params.id, 10);
+    try{
+        const item = await Item.findByPk(item_id);
+        if (!item){
+            // 404: não encontrado
+            return res.status(404).json({ erro: 'Item com esse id não encontrado' });
+        }
+        // 200: item buscado
+        res.status(200).json(item);
+    }catch(error){
+        // 500: erro interno no servidor
+        res.status(500).json({erro: error.message})
+    }
+}
