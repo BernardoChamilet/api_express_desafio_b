@@ -13,3 +13,5 @@ items_routes.get('/items', verificarToken, controllers.getItems);
 items_routes.get('/items/creator/:creator_id', verificarToken, controllers.getCreatorItems);
 
 items_routes.put('/items/:id', verificarToken, controllers.updateItem);
+
+items_routes.delete('/items/:id', verificarToken, controllers.deleteItem);

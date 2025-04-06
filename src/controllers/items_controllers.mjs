@@ -63,7 +63,7 @@ export async function getItems(req, res) {
 }
 
 // getCreatorItems busca todos os items de um criador
-export async function getCreatorItems(req, res){
+export async function getCreatorItems(req, res) {
     try {
         const creator = parseInt(req.params.creator_id, 10);
         const limit = parseInt(req.query.limit, 10) || 10;
@@ -94,13 +94,13 @@ export async function updateItem(req, res) {
         }
     }
     try {
-        const item = await Item.findByPk(item_id, { attributes: ['item_id','creator'] });
+        const item = await Item.findByPk(item_id, { attributes: ['item_id', 'creator'] });
         if (!item) {
             // 404: item não encontrado
             return res.status(404).json({ erro: 'Item com esse id não encontrado' });
         }
         // verificando se o logado é o criador do item
-        if (item.creator !== creator){
+        if (item.creator !== creator) {
             // 403: proibido atualizar item que não seja o criador
             return res.status(403).json({ erro: 'Não é permitido atualizar dados de um item que não seja o criador' });
         }
@@ -113,6 +113,30 @@ export async function updateItem(req, res) {
             // 400: requisição mal feita
             return res.status(400).json({ erro: message });
         }
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
+
+// deleteItem deleta um item (somente criador consegue)
+export async function deleteItem(req, res) {
+    const item_id = parseInt(req.params.id, 10);
+    const creator = req.user_id;
+    try {
+        const item = await Item.findByPk(item_id, { attributes: ['item_id', 'creator'] });
+        if (!item) {
+            // 404: item não encontrado
+            return res.status(404).json({ erro: 'Item com esse id não encontrado' });
+        }
+        // verificando se o logado é o criador do item
+        if (item.creator !== creator) {
+            // 403: proibido deletar item que não seja o criador
+            return res.status(403).json({ erro: 'Não é permitido deletar um item que não seja o criador' });
+        }
+        await item.destroy()
+        // 204: usuário deletado
+        res.status(204).send();
+    } catch (error) {
         // 500: erro interno no servidor
         res.status(500).json({ erro: error.message });
     }
