@@ -34,6 +34,8 @@ export async function verificarToken(req, res, next) {
     try {
         // Verificando se o token é válido
         const payload = jwt.verify(token, SECRET_KEY);
+        // Salvando user_id do token no objeto da requisição
+        req.user_id = payload.user_id;
         next();
     } catch (error) {
         // 401: não autorizado
