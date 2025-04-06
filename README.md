@@ -1,6 +1,6 @@
 # API REST Express
 
-## Desafio Estagiário Backed B - Time Web: API REST que implementa CRUD solicitado
+## Desafio Estagiário Backend B - Time Web: API REST com node, express e sequelize
 
 ## Estrutura da API:
 * Routes: definição de rotas (nome, método http e função)
