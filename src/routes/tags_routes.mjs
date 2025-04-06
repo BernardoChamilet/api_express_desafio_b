@@ -5,3 +5,5 @@ import { verificarToken } from '../middlewares/auth.mjs';
 export const tags_routes = express.Router();
 
 tags_routes.post('/tags', verificarToken, controllers.createTag);
+
+tags_routes.get('/tags', verificarToken, controllers.getTags);
