@@ -35,3 +35,20 @@ export async function getTags(req, res) {
         res.status(500).json({ erro: error.message });
     }
 }
+
+// getTag busca uma tag pelo id
+export async function getTag(req, res) {
+    const tag_id = parseInt(req.params.id, 10);
+    try {
+        const tag = await Tag.findByPk(tag_id);
+        if (!tag) {
+            // 404: tag não encontrada
+            return res.status(404).json({ erro: 'Tag com esse id não encontrada' });
+        }
+        // 200: tag buscada
+        res.status(200).json(tag);
+    } catch (error) {
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message })
+    }
+}
