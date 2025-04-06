@@ -61,3 +61,22 @@ export async function getItems(req, res) {
         res.status(500).json({ erro: error.message });
     }
 }
+
+// getCreatorItems busca todos os items de um criador
+export async function getCreatorItems(req, res){
+    try {
+        const creator = parseInt(req.params.creator_id, 10);
+        const limit = parseInt(req.query.limit, 10) || 10;
+        const offset = parseInt(req.query.offset, 10) || 0;
+        const items = await Item.findAll({ limit, offset, order: [['item_id', 'ASC']], where: { creator: creator } });
+        if (items.length === 0) {
+            // 204: nenhum item
+            return res.status(204).send();
+        }
+        // 200: items buscados
+        res.status(200).json(items);
+    } catch (error) {
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
