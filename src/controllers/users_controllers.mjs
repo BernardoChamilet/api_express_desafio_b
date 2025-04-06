@@ -73,7 +73,7 @@ export async function updateUser(req, res){
         }
     }
     try{
-        const user = await User.findByPk(user_id);
+        const user = await User.findByPk(user_id, {attributes: [ 'user_id' ]});
         if (!user){
             // 404: usuário não encontrado
             return res.status(404).json({ erro: 'Usuário com esse id não encontrado' });
@@ -102,7 +102,7 @@ export async function updatePassword(req, res){
     const user_id = parseInt(req.params.id, 10);
     const {old_password, new_password} = req.body;
     try{
-        const user = await User.findByPk(user_id);
+        const user = await User.findByPk(user_id, {attributes: ['user_id', 'user_password']});
         if (!user){
             // 404: usuário não encontrado
             return res.status(404).json({ erro: 'usuário com esse id não encontrado' });
@@ -132,7 +132,7 @@ export async function updatePassword(req, res){
 export async function deleteUser(req, res){
     const user_id = parseInt(req.params.id, 10);
     try{
-        const user = await User.findByPk(user_id);
+        const user = await User.findByPk(user_id, {attributes: ['user_id']});
         if (!user){
             // 404: usuário não encontrado
             return res.status(404).json({ erro: 'Usuário com esse id não encontrado' });
