@@ -29,3 +29,22 @@ export async function tagItem(req, res) {
         res.status(500).json({ erro: error.message });
     }
 }
+
+// deleteTagItemRelation deleta a relação entre um item e uma tag
+export async function deleteTagItemRelation(req, res) {
+    const tag_id = parseInt(req.params.tag_id, 10);
+    const item_id = parseInt(req.params.item_id, 10);
+    try {
+        const relation = await Item_Tag.findOne({ where: { item_id, tag_id } });
+        if (!relation) {
+            // 404: relação não encontrada
+            return res.status(404).json({ erro: 'Relação não encontrada' });
+        }
+        await Item_Tag.destroy({ where: { item_id, tag_id } });
+        // 204: relação deletada
+        res.status(204).send();
+    } catch (error) {
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}

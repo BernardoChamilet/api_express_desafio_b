@@ -5,3 +5,5 @@ import { verificarToken } from '../middlewares/auth.mjs';
 export const items_tags_routes = express.Router();
 
 items_tags_routes.post('/items_tags/:item_id/:tag_id', verificarToken, controllers.tagItem);
+
+items_tags_routes.delete('/items_tags/:item_id/:tag_id', verificarToken, controllers.deleteTagItemRelation);
