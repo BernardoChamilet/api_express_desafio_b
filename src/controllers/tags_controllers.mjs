@@ -52,3 +52,36 @@ export async function getTag(req, res) {
         res.status(500).json({ erro: error.message })
     }
 }
+
+// updateTagName atualiza nome da tag
+export async function updateTagName(req, res) {
+    const { tag_name } = req.body;
+    if (!tag_name) {
+        // 204: nada para atualizar
+        return res.status(204).send();
+    }
+    const tag_id = parseInt(req.params.id, 10);
+    try {
+        const tag = await Tag.findByPk(tag_id, { attributes: ['tag_id', 'tag_name'] });
+        if (!tag) {
+            // 404: tag não encontrada
+            return res.status(404).json({ erro: 'Tag com esse id não encontrada' });
+        }
+        // Verificando se o nome foi realmente mudado para evitar acesso do sgbd
+        if (tag_name === tag.tag_name) {
+            // 204: nada para atualizar
+            return res.status(204).send();
+        }
+        await tag.update({ tag_name });
+        // 200: dados atualizados
+        res.status(200).json({ mensagem: `Nome da tag de id ${tag_id} atualizado com sucesso` });
+    } catch (error) {
+        if (error.name === 'SequelizeValidationError') {
+            const message = error.errors.map(e => e.message);
+            // 400: requisição mal feita
+            return res.status(400).json({ erro: message });
+        }
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
