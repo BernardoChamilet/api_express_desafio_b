@@ -52,6 +52,8 @@ export async function deleteTagItemRelation(req, res) {
 // getItemsTags busca todas tags de um item
 export async function getItemsTags(req, res) {
     const item_id = parseInt(req.params.item_id, 10);
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = parseInt(req.query.offset, 10) || 0;
     try {
         const items_tags_ids = await Item_Tag.findAll({ where: { item_id }, attributes: ['tag_id'] });
         if (items_tags_ids.length === 0) {
@@ -61,7 +63,7 @@ export async function getItemsTags(req, res) {
         // obtendo ids da lista
         const ids = items_tags_ids.map(rel => rel.tag_id);
         // buscando tags
-        const lista_tags = await Tag.findAll({ where: { tag_id: ids } });
+        const lista_tags = await Tag.findAll({ limit, offset, order: [['tag_id', 'ASC']], where: { tag_id: ids } });
         // 200: tags buscadas
         res.status(200).json(lista_tags);
     } catch (error) {
@@ -73,6 +75,8 @@ export async function getItemsTags(req, res) {
 // getTagsItems busca todos items que tem determinada tag
 export async function getTagsItems(req, res) {
     const tag_id = parseInt(req.params.tag_id, 10);
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = parseInt(req.query.offset, 10) || 0;
     try {
         const tag_items_ids = await Item_Tag.findAll({ where: { tag_id }, attributes: ['item_id'] });
         if (tag_items_ids.length === 0) {
@@ -82,7 +86,7 @@ export async function getTagsItems(req, res) {
         // obtendo ids da lista
         const ids = tag_items_ids.map(rel => rel.item_id);
         // buscando itens
-        const lista_items = await Item.findAll({ where: { item_id: ids } });
+        const lista_items = await Item.findAll({ limit, offset, order: [['item_id', 'ASC']], where: { item_id: ids } });
         // 200: items buscados
         res.status(200).json(lista_items);
     } catch (error) {
