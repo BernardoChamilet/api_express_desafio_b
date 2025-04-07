@@ -52,6 +52,8 @@ export async function deleteReceiverRelation(req, res) {
 // getReceiversItems busca todos items recebidos por um usuário
 export async function getReceiversItems(req, res) {
     const receiver_id = parseInt(req.params.id, 10);
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = parseInt(req.query.offset, 10) || 0;
     try {
         const receivers_items_ids = await Receiver_Item.findAll({ where: { receiver_id }, attributes: ['item_id'] });
         if (receivers_items_ids.length === 0) {
@@ -61,7 +63,7 @@ export async function getReceiversItems(req, res) {
         // obtendo ids da lista
         const ids = receivers_items_ids.map(rel => rel.item_id);
         // buscando itens
-        const lista_items = await Item.findAll({ where: { item_id: ids } });
+        const lista_items = await Item.findAll({ limit, offset, order: [['item_id', 'ASC']], where: { item_id: ids } });
         // 200: items buscados
         res.status(200).json(lista_items);
     } catch (error) {
@@ -73,6 +75,8 @@ export async function getReceiversItems(req, res) {
 // getItemsReceivers busca todos os usuário que são receivers de um item
 export async function getItemsReceivers(req, res) {
     const item_id = parseInt(req.params.item_id, 10);
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const offset = parseInt(req.query.offset, 10) || 0;
     try {
         const items_receivers_ids = await Receiver_Item.findAll({ where: { item_id }, attributes: ['receiver_id'] });
         if (items_receivers_ids.length === 0) {
@@ -82,7 +86,7 @@ export async function getItemsReceivers(req, res) {
         // obtendo ids da lista
         const ids = items_receivers_ids.map(rel => rel.receiver_id);
         // buscando usuários
-        const lista_users = await User.findAll({ where: { user_id: ids }, attributes: { exclude: ['user_password'] } });
+        const lista_users = await User.findAll({ limit, offset, order: [['user_id', 'ASC']], where: { user_id: ids }, attributes: { exclude: ['user_password'] } });
         // 200: usuários buscados
         res.status(200).json(lista_users);
     } catch (error) {
