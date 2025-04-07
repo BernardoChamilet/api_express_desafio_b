@@ -4,6 +4,7 @@ import { login_route } from './src/routes/login.mjs';
 import { items_routes } from './src/routes/items_routes.mjs';
 import { tags_routes } from './src/routes/tags_routes.mjs';
 import { receiver_routes } from './src/routes/receivers_routes.mjs';
+import { items_tags_routes } from './src/routes/items_tags_routes.mjs';
 import { PORT } from './src/config/config.mjs';
 import { sequelize } from './src/database/database.mjs';
 
@@ -16,6 +17,7 @@ app.use(login_route);
 app.use(items_routes);
 app.use(tags_routes);
 app.use(receiver_routes);
+app.use(items_tags_routes);
 
 try{
     await sequelize.authenticate();
