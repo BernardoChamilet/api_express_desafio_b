@@ -69,3 +69,24 @@ export async function getReceiversItems(req, res) {
         res.status(500).json({ erro: error.message });
     }
 }
+
+// getItemsReceivers busca todos os usuário que são receivers de um item
+export async function getItemsReceivers(req, res) {
+    const item_id = parseInt(req.params.item_id, 10);
+    try {
+        const items_receivers_ids = await Receiver_Item.findAll({ where: { item_id }, attributes: ['receiver_id'] });
+        if (items_receivers_ids.length === 0) {
+            // 404: item não tem nenhum receiver
+            return res.status(404).json({ erro: 'item não tem nenhum receiver' });
+        }
+        // obtendo ids da lista
+        const ids = items_receivers_ids.map(rel => rel.receiver_id);
+        // buscando itens
+        const lista_users = await User.findAll({ where: { user_id: ids } });
+        // 200: usuários buscados
+        res.status(200).json(lista_users);
+    } catch (error) {
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
