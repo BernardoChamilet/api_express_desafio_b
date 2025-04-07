@@ -69,3 +69,24 @@ export async function getItemsTags(req, res) {
         res.status(500).json({ erro: error.message });
     }
 }
+
+// getTagsItems busca todos items que tem determinada tag
+export async function getTagsItems(req, res) {
+    const tag_id = parseInt(req.params.tag_id, 10);
+    try {
+        const tag_items_ids = await Item_Tag.findAll({ where: { tag_id }, attributes: ['item_id'] });
+        if (tag_items_ids.length === 0) {
+            // 404: nenhum item com essa tag
+            return res.status(404).json({ erro: 'nenhum item com essa tag' });
+        }
+        // obtendo ids da lista
+        const ids = tag_items_ids.map(rel => rel.item_id);
+        // buscando itens
+        const lista_items = await Item.findAll({ where: { item_id: ids } });
+        // 200: items buscados
+        res.status(200).json(lista_items);
+    } catch (error) {
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}

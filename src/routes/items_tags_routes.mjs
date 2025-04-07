@@ -9,3 +9,5 @@ items_tags_routes.post('/items_tags/:item_id/:tag_id', verificarToken, controlle
 items_tags_routes.delete('/items_tags/:item_id/:tag_id', verificarToken, controllers.deleteTagItemRelation);
 
 items_tags_routes.get('/items_tags/:item_id', verificarToken, controllers.getItemsTags);
+
+items_tags_routes.get('/items_tags/items_list/:tag_id', verificarToken, controllers.getTagsItems);
