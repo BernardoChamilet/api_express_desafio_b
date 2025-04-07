@@ -81,8 +81,8 @@ export async function getItemsReceivers(req, res) {
         }
         // obtendo ids da lista
         const ids = items_receivers_ids.map(rel => rel.receiver_id);
-        // buscando itens
-        const lista_users = await User.findAll({ where: { user_id: ids } });
+        // buscando usuários
+        const lista_users = await User.findAll({ where: { user_id: ids }, attributes: { exclude: ['user_password'] } });
         // 200: usuários buscados
         res.status(200).json(lista_users);
     } catch (error) {
