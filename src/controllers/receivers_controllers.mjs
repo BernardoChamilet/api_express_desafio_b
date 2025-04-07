@@ -35,7 +35,7 @@ export async function deleteReceiverRelation(req, res) {
     const receiver_id = parseInt(req.params.id, 10);
     const item_id = parseInt(req.params.item_id, 10);
     try {
-        const relation = await Receiver_Item.findOne({where: {item_id, receiver_id}});
+        const relation = await Receiver_Item.findOne({ where: { item_id, receiver_id } });
         if (!relation) {
             // 404: relação não encontrado
             return res.status(404).json({ erro: 'Relação não encontrada' });
@@ -43,6 +43,27 @@ export async function deleteReceiverRelation(req, res) {
         await Receiver_Item.destroy({ where: { item_id, receiver_id } });
         // 204: relação deletada
         res.status(204).send();
+    } catch (error) {
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
+
+// getReceiversItems busca todos items recebidos por um usuário
+export async function getReceiversItems(req, res) {
+    const receiver_id = parseInt(req.params.id, 10);
+    try {
+        const receivers_items_ids = await Receiver_Item.findAll({ where: { receiver_id }, attributes: ['item_id'] });
+        if (receivers_items_ids.length === 0) {
+            // 404: usuário não é receiver de nenhum item
+            return res.status(404).json({ erro: 'usuário não é receiver de nenhum item' });
+        }
+        // obtendo ids da lista
+        const ids = receivers_items_ids.map(rel => rel.item_id);
+        // buscando itens
+        const lista_items = await Item.findAll({ where: { item_id: ids } });
+        // 200: items buscados
+        res.status(200).json(lista_items);
     } catch (error) {
         // 500: erro interno no servidor
         res.status(500).json({ erro: error.message });
