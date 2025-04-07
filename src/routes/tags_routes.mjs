@@ -11,3 +11,5 @@ tags_routes.get('/tags', verificarToken, controllers.getTags);
 tags_routes.get('/tags/:id', verificarToken, controllers.getTag);
 
 tags_routes.patch('/tags/:id', verificarToken, controllers.updateTagName);
+
+tags_routes.delete('/tags/:id', verificarToken, controllers.deleteTag);

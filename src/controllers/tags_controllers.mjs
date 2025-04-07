@@ -85,3 +85,21 @@ export async function updateTagName(req, res) {
         res.status(500).json({ erro: error.message });
     }
 }
+
+// deleteTag deleta uma tag
+export async function deleteTag(req, res) {
+    const tag_id = parseInt(req.params.id, 10);
+    try {
+        const tag = await Tag.findByPk(tag_id, { attributes: ['tag_id'] });
+        if (!tag) {
+            // 404: tag não encontrada
+            return res.status(404).json({ erro: 'Tag com esse id não encontrada' });
+        }
+        await tag.destroy()
+        // 204: tag deletada
+        res.status(204).send();
+    } catch (error) {
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
