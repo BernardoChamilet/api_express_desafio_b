@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS tags (
 CREATE TABLE IF NOT EXISTS item_receiver (
     receiver_id INT NOT NULL,
     item_id INT NOT NULL,
+    PRIMARY KEY (receiver_id, item_id),
     FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE
 );
@@ -31,6 +32,7 @@ CREATE TABLE IF NOT EXISTS item_receiver (
 CREATE TABLE IF NOT EXISTS item_tag(
     item_id INT NOT NULL,
     tag_id INT NOT NULL,
+    PRIMARY KEY (item_id, tag_id),
     FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE,
     FOREIGN KEY (tag_id) REFERENCES tags(tag_id) ON DELETE CASCADE
 );
