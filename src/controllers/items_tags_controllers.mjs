@@ -48,3 +48,24 @@ export async function deleteTagItemRelation(req, res) {
         res.status(500).json({ erro: error.message });
     }
 }
+
+// getItemsTags busca todas tags de um item
+export async function getItemsTags(req, res) {
+    const item_id = parseInt(req.params.item_id, 10);
+    try {
+        const items_tags_ids = await Item_Tag.findAll({ where: { item_id }, attributes: ['tag_id'] });
+        if (items_tags_ids.length === 0) {
+            // 404: item não tem nenhuma tag
+            return res.status(404).json({ erro: 'item não tem nenhuma tag' });
+        }
+        // obtendo ids da lista
+        const ids = items_tags_ids.map(rel => rel.tag_id);
+        // buscando tags
+        const lista_tags = await Tag.findAll({ where: { tag_id: ids } });
+        // 200: tags buscadas
+        res.status(200).json(lista_tags);
+    } catch (error) {
+        // 500: erro interno no servidor
+        res.status(500).json({ erro: error.message });
+    }
+}
