@@ -1,0 +1,1886 @@
+openapi: 3.0.3
+info:
+  title: API REST desafio b back-end
+  version: 1.0.0
+  description: Documentação da API REST feita com node, express e sequelize para o desafio estagiário backend b 
+  contact:
+    email: bernardoboggionechamilet@gmail.com
+paths:
+  /login:
+    post:
+      summary: Login
+      description: Verifica dados e retorna ou não token e id do logado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: x@y.z
+                user_password:
+                  type: string
+                  format: password
+                  example: senha123
+              required:
+                - email
+                - user_password
+      responses:
+        '200':
+          description: Login efetuado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    example: 1
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmlhY2FvIj9xNzMyMDY3MDU3NzM4NzY4MjAwLCJtYXRyaWN1bGEiOjF9.ani-nrkFfk0dkBNfFrtgeEACZxs8mcwVYpBlJGFktlM
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: senha incorreta
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: email não encontrado
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /users:
+    post:
+      summary: Criar usuário
+      description: Cadastra um novo usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: fulano
+                last_name:
+                  type: string
+                  example: da silva
+                username:
+                  type: string
+                  example: Fufu
+                email:
+                  type: string
+                  format: email
+                  example: x@y.z
+                user_password:
+                  type: string
+                  format: password
+                  example: senha123
+              required:
+                - first_name
+                - last_name
+                - username
+                - email
+                - user_password
+      responses:
+        '201':
+          description: Usuário criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    example: 1
+        '400':
+          description: Requisição mal feita
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: algum campo no formato inválido ou com poucos caracteres
+        '409':
+          description: Requisição mal feita
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: email já está em uso
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    get:
+      summary: Buscar usuários
+      description: Busca todos usuários
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usuários buscados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                      example: 1
+                    first_name:
+                      type: string
+                      example: Fulano
+                    last_name:
+                      type: string
+                      example: da Silva
+                    username:
+                      type: string
+                      example: Fufu
+                    email:
+                      type: string
+                      format: email
+                      example: fulano@gmail.com
+                example:
+                  - user_id: 1
+                    first_name: Fulano
+                    last_name: da Silva
+                    username: Fufu
+                    email: fu@gmail.com
+                  - user_id: 2
+                    first_name: Ciclano
+                    last_name: Silva
+                    username: Ciclano123
+                    email: ciclano@gmail.com
+        '204':
+          description: Nenhum usuário encontrado
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /users/{id}:
+    get:
+      summary: Buscar usuário
+      description: Busca um usuário pelo id
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id do usuário
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuário encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    example: 1
+                  first_name:
+                    type: string
+                    example: Fulano
+                  last_name:
+                    type: string
+                    example: da Silva
+                  username:
+                    type: string
+                    example: Fufu
+                  email:
+                    type: string
+                    format: email
+                    example: fulano@gmail.com
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: usuário não encontrado
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    put:
+      summary: Atualizar usuário
+      description: Atualiza dados de um usuário
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id do usuário
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: Fulano
+                last_name:
+                  type: string
+                  example: Silva
+                username:
+                  type: string
+                  example: Fulano123
+                email:
+                  type: string
+                  format: email
+                  example: fulano@gmail.com
+      responses:
+        '200':
+          description: Dados atualizados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: dados do usuário de id 1 atualizados com sucesso
+        '400':
+          description: Requisição mal feita
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: número de caracters não permitido
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '403':
+          description: Ação proibida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: não pode atualizar dados que não os seus
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: usuário com determinado id não encontrado
+        '409':
+          description: conflito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: novo email já está em uso
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    delete:
+      summary: Deletar Usuário
+      description: Deleta um usuário
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id do usuário
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Usuário deletado
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '403':
+          description: Ação proibida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: Não pode deletar usuário que não o seu
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: usuário com determinado id não encontrado  
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /users/{id}/password:
+    patch:
+      summary: Atualizar senha
+      description: Atualiza senha de um usuário
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id do usuário
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                  example: senha123
+                new_password:
+                  type: string
+                  example: senha321
+              required:
+                - old_password
+                - new_password
+      responses:
+        '200':
+          description: Senha atualizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: senha do usuário de id 1 atualizada com sucesso
+        '400':
+          description: Requisição mal feita
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: número de caracters não permitido
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '403':
+          description: Ação proibida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: não pode atualizar dados que não os seus
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: usuário com determinado id não encontrado
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /items:
+    post:
+      summary: Criar item
+      description: Cria um novo item
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                item_name:
+                  type: string
+                  example: item1
+                item_description:
+                  type: string
+                  example: descrição do item1
+                image_url:
+                  type: string
+                  example: c:/image.jpg
+              required:
+                - item_name
+                - item_description
+      responses:
+        '201':
+          description: Item criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  item_id:
+                    type: integer
+                    example: 1
+                  item_name:
+                    type: string
+                    example: item1
+                  item_description:
+                    type: string
+                    example: descrição do item1
+                  creator:
+                    type: integer
+                    example: 5
+        '400':
+          description: Requisição mal feita
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: algum campo no formato inválido ou com poucos caracteres
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token inválido
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    get:
+      summary: Buscar itens
+      description: Busca todos itens
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Itens buscados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    item_id:
+                      type: integer
+                      example: 1
+                    item_name:
+                      type: string
+                      example: item1
+                    item_description:
+                      type: string
+                      example: descrição do item1
+                    creator:
+                      type: integer
+                      example: 5
+                example:
+                  - item_id: 1
+                    item_name: item1
+                    item_description: descrição do item1
+                    creator: 5
+                  - item_id: 2
+                    item_name: item2
+                    item_description: descrição do item2
+                    creator: 8
+        '204':
+          description: Nenhum item encontrado
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /items/{id}:
+    get:
+      summary: Buscar item
+      description: Busca um item pelo id
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id do item
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Item encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  item_id:
+                    type: integer
+                    example: 1
+                  item_name:
+                    type: string
+                    example: item1
+                  item_description:
+                    type: string
+                    example: descrição do item1
+                  creator:
+                    type: integer
+                    example: 5
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: item não encontrado
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    put:
+      summary: Atualizar item
+      description: Atualiza dados de um item
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id do item
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                item_name:
+                  type: string
+                  example: item1
+                item_description:
+                  type: string
+                  example: descrição do item1
+                image_url:
+                  type: string
+                  example: c:/image.jpg
+      responses:
+        '200':
+          description: Dados atualizados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: dados do item de id 1 atualizados com sucesso
+        '400':
+          description: Requisição mal feita
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: número de caracters não permitido
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '403':
+          description: Ação proibida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: somente o criador do item pode atualizar seus dados
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: item com determinado id não encontrado
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    delete:
+      summary: Deletar Item
+      description: Deleta um item
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id do item
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: item deletado
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '403':
+          description: Ação proibida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: somente o criador do item pode deleta-lo
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: item com determinado id não encontrado  
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /items/creator/{creator_id}:
+    get:
+      summary: Buscar itens de um criador
+      description: Busca todos itens de um criador
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: creator_id
+          in: header
+          required: true
+          description: id do criador
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Itens buscados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    item_id:
+                      type: integer
+                      example: 1
+                    item_name:
+                      type: string
+                      example: item1
+                    item_description:
+                      type: string
+                      example: descrição do item1
+                    creator:
+                      type: integer
+                      example: 5
+                example:
+                  - item_id: 1
+                    item_name: item1
+                    item_description: descrição do item1
+                    creator: 5
+                  - item_id: 2
+                    item_name: item2
+                    item_description: descrição do item2
+                    creator: 5
+        '204':
+          description: Nenhum item encontrado
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /tags:
+    post:
+      summary: Criar tag
+      description: Cria uma nova tag
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_name:
+                  type: string
+                  example: tag1
+              required:
+                - tag_name
+      responses:
+        '201':
+          description: Tag criada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tag_id:
+                    type: integer
+                    example: 1
+                  tag_name:
+                    type: string
+                    example: tag1
+        '400':
+          description: Requisição mal feita
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: algum campo no formato inválido ou com poucos caracteres
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token inválido
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    get:
+      summary: Buscar tags
+      description: Busca todas tags
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tags buscadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tag_id:
+                      type: integer
+                      example: 1
+                    tag_name:
+                      type: string
+                      example: tag1
+                example:
+                  - tag_id: 1
+                    tag_name: tag1
+                  - tag_id: 2
+                    tag_name: tag2
+        '204':
+          description: Nenhuma tag encontrada
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /tags/{id}:
+    get:
+      summary: Buscar tag
+      description: Busca uma tag pelo id
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id da tag
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tag encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tag_id:
+                    type: integer
+                    example: 1
+                  tag_name:
+                    type: string
+                    example: tag1
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: tag não encontrada
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    put:
+      summary: Atualizar tag
+      description: Atualiza nome de uma tag
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id da tag
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_name:
+                  type: string
+                  example: tag1
+      responses:
+        '200':
+          description: Dados atualizados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: nome da tag de id 1 atualizado com sucesso
+        '204':
+          description: Nenhum dado atualizado
+        '400':
+          description: Requisição mal feita
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: número de caracters não permitido
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: tag com determinado id não encontrada
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    delete:
+      summary: Deletar Tag
+      description: Deleta uma tag
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id da tag
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: tag deletada
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: tag com determinado id não encontrada 
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /receiver/{id}/{item_id}:
+    post:
+      summary: Criar receiver_item
+      description: Torna um usuário receiver de um item
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: header
+          required: true
+          description: id do usuário
+          schema:
+            type: integer
+        - name: item_id
+          in: header
+          required: true
+          description: id do item
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Relação criada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: usuário de id 1 agora é receiver do item de id 5
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token inválido
+        '403':
+          description: Proibido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: id da url não é o mesmo do usuário logado
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: usuário ou item não encontrado
+        '409':
+          description: Conflito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: relação já existente
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    delete:
+      summary: Deletar relação item receiver
+      description: Deleta a relação de receiver de um usuário com um item
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          description: id do usuário
+          schema:
+            type: integer
+        - name: item_id
+          in: path
+          required: true
+          description: id do item
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: relação deletada
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '403':
+          description: Proibido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: id da url não é o mesmo do usuário logado
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: relação não encontrada 
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /receiver/receivers_items/{id}:
+    get:
+      summary: Buscar itens de um receiver
+      description: Busca todas itens de um receiver
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: id 
+          in: header
+          required: true
+          description: id do receiver
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: itens buscados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    item_id:
+                      type: integer
+                      example: 1
+                    item_name:
+                      type: string
+                      example: item1
+                    item_description:
+                      type: string
+                      example: descrição do item1
+                    creator:
+                      type: integer
+                      example: 5
+                example:
+                  - item_id: 1
+                    item_name: item1
+                    item_description: descrição do item1
+                    creator: 5
+                  - item_id: 2
+                    item_name: item2
+                    item_description: descrição do item2
+                    creator: 8
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '403':
+          description: Proibido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: somente o receiver pode ver os itens que recebeu
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: esse usuário não faz parte de nenhuma relação receiver item
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /receiver/items_receivers/{item_id}:
+    get:
+      summary: Buscar receivers de um item
+      description: Busca todos usuários que são receivers de um item
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: item_id
+          in: header
+          required: true
+          description: id de um item
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuários buscados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                      example: 1
+                    first_name:
+                      type: string
+                      example: Fulano
+                    last_name:
+                      type: string
+                      example: da Silva
+                    username:
+                      type: string
+                      example: Fufu
+                    email:
+                      type: string
+                      format: email
+                      example: fulano@gmail.com
+                example:
+                  - user_id: 1
+                    first_name: Fulano
+                    last_name: da Silva
+                    username: Fufu
+                    email: fu@gmail.com
+                  - user_id: 2
+                    first_name: Ciclano
+                    last_name: Silva
+                    username: Ciclano123
+                    email: ciclano@gmail.com
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: esse item não faz parte de nenhuma relação receiver item
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /items_tags/{item_id}/{tag_id}:
+    post:
+      summary: Criar item_tag
+      description: Atribui uma tag a um item
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: tag_id
+          in: header
+          required: true
+          description: id da tag
+          schema:
+            type: integer
+        - name: item_id
+          in: header
+          required: true
+          description: id do item
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Relação criada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: tag de id 1 atribuida ao item de id 5
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token inválido
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: tag ou item não encontrado
+        '409':
+          description: Conflito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: relação já existente
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+    delete:
+      summary: Deletar relação item tag
+      description: Deleta a relação de uma tag com um item
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: tag_id
+          in: path
+          required: true
+          description: id da tag
+          schema:
+            type: integer
+        - name: item_id
+          in: path
+          required: true
+          description: id do item
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: relação deletada
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: relação não encontrada 
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /items_tags/items_list/{tag_id}:
+    get:
+      summary: Buscar itens que usam uma tag
+      description: Busca todos itens que tem determinada tag
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: tag_id 
+          in: header
+          required: true
+          description: id da tag
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: itens buscados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    item_id:
+                      type: integer
+                      example: 1
+                    item_name:
+                      type: string
+                      example: item1
+                    item_description:
+                      type: string
+                      example: descrição do item1
+                    creator:
+                      type: integer
+                      example: 5
+                example:
+                  - item_id: 1
+                    item_name: item1
+                    item_description: descrição do item1
+                    creator: 5
+                  - item_id: 2
+                    item_name: item2
+                    item_description: descrição do item2
+                    creator: 8
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: essa tag não faz parte de nenhuma relação item tag
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor
+  /items_tags/{item_id}:
+    get:
+      summary: Buscar tags de um item
+      description: Busca todas tags de um item
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          description: Token de autenticação (Bearer token)
+          schema:
+            type: string
+        - name: item_id
+          in: header
+          required: true
+          description: id do item
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tags buscadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tag_id:
+                      type: integer
+                      example: 1
+                    tag_name:
+                      type: string
+                      example: tag1
+                example:
+                  - tag_id: 1
+                    tag_name: tag1
+                  - tag_id: 2
+                    tag_name: tag2
+        '401':
+          description: Não autorizado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: token faltando no cabeçalho
+        '404':
+          description: Não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: essa item não tem nenhuma tag
+        '500':
+          description: Erro no servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  erro:
+                    type: string
+                    example: erro no servidor

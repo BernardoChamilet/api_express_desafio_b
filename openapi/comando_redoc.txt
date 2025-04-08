@@ -1,0 +1,2 @@
+Para gerar o html é necessário ter o node instalado e rodar o seguinte comando no mesmo diretório do openapi.yaml
+npx @redocly/cli build-docs openapi.yaml -o html_name.html --title "Title"
